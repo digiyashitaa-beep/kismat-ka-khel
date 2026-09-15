@@ -15,7 +15,21 @@ jobs:
         run: |
           mkdir project
           unzip Kismat_Ka_Khel_Firebase_OTP_Firestore_FRESH_V2.zip -d project
-
+      - name: Configure AndroidX and debug keystore
+        run: |
+          touch project/gradle.properties
+          grep -qxF 'android.useAndroidX=true' project/gradle.properties || echo 'android.useAndroidX=true' >> project/gradle.properties
+          grep -qxF 'android.enableJetifier=true' project/gradle.properties || echo 'android.enableJetifier=true' >> project/gradle.properties
+          mkdir -p "$HOME/.config/.android"
+          keytool -genkeypair -v \
+            -keystore "$HOME/.config/.android/debug.keystore" \
+            -storepass android \
+            -alias AndroidDebugKey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=Android Debug,O=Android,C=US"
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
